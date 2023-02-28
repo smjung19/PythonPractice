@@ -43,14 +43,13 @@ def dict_maker(input_list):
         tmp_dict = {}
         for tag in tg_tot_set:
             tmp_dict[tag] = txt_slicer(tag, input_list[i])
-            print('Progress: %3d/200    Total: %d/%d\r'%(i+1, page_num, pages_num), end = '')
+            print('Progress: %3d/200 Total: %d/%d\r'%(i+1, page_num, pages_num), end = '')
         tmp_paper.append(tmp_dict)
         
     return tmp_paper
 
 # ====================================================================================================
 
-paper_list = []
 tg_tot_set = ("PMID", "JT", "TI", "AB", "SO", "MH", "OT")
 tg_mult_set = ("MH", "OT")
 
@@ -63,48 +62,50 @@ pages_num = int(input("탐색할 페이지 수: "))
 
 # ====================================================================================================
 
+f = open(my_path+"/Papers.txt", 'a+')
+
+# ====================================================================================================
+alp = 0
+
 for page_num in range(1, pages_num + 1):
+    paper_list = []
     raw_list = []
     raw_list = raw_list_maker(url, page_num)
     if raw_list == []:
         print("None")
         break
     paper_list.extend(dict_maker(raw_list))
+    for paper in paper_list:
+        f.write("No. %d"%(paper_list.index(paper) + 1 + alp) + "\n")
+        try:
+            f.write("ID: " + paper["PMID"] + "\n")
+        except:
+            f.write("ID: " + "None\n")
+        try:
+            f.write("TI: " + paper["TI"] + "\n")
+        except:
+            f.write("TI: " + "None\n")
+        try:
+            f.write("AB: " + paper["AB"] + "\n")
+        except:
+            f.write("AB: " + "None\n")
+        try:
+            for MH in paper["MH"]:
+                f.write("MH: " + MH + "\n")
+        except:
+            f.write("MH: " + "None\n")
+        try:
+            for OT in paper["OT"]:
+                f.write("OT: " + OT + "\n")
+        except:
+            f.write("OT: " + "None\n")
+        try:
+            f.write("SO: " + paper["SO"] + "\n")
+        except:
+            f.write("SO: " + "None\n")
+        f.write("\n")
+    alp = alp + 200
 
 # ====================================================================================================
-
-f = open(my_path+"/Papers.txt", 'w')
-
-# ====================================================================================================
-
-for paper in paper_list:
-    try:
-        f.write("ID: " + paper["PMID"] + "\n")
-    except:
-        f.write("ID: " + "None\n")
-    try:
-        f.write("TI: " + paper["TI"] + "\n")
-    except:
-        f.write("TI: " + "None\n")
-    try:
-        f.write("AB: " + paper["AB"] + "\n")
-    except:
-        f.write("AB: " + "None\n")
-    try:
-        for MH in paper["MH"]:
-            f.write("MH: " + MH + "\n")
-    except:
-        f.write("MH: " + "None\n")
-    try:
-        for OT in paper["OT"]:
-            f.write("OT: " + OT + "\n")
-    except:
-        f.write("OT: " + "None\n")
-    try:
-        f.write("SO: " + paper["SO"] + "\n")
-    except:
-        f.write("SO: " + "None\n")
-
-    f.write("\n")
 
 f.close()
